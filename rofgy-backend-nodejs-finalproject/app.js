@@ -126,6 +126,36 @@ app.post('/login', async (req, res) => { // Handle user login requests.
 }); // End the login route.
 
 // Insert your post creation code here.
+app.post('/post', authenticateJWT, async (req, res) => { // Handle post creation requests for authenticated users.
+  const { text } = req.body; // Extract post text from the request body.
+
+  // Validate post content
+  if (!text || typeof text !== 'string') { // Ensure the post text is present and a string.
+    return res.status(400).json({ message: 'Please provide valid post content' }); // Reject invalid post content.
+  }
+
+  try { // Start post creation flow with error handling.
+    // Create and save new post with userId
+    const newPost = new Post({ userId: req.user.userId, text }); // Create a post tied to the authenticated user.
+    await newPost.save(); // Persist the new post to the database.
+    res.status(201).json({ message: 'Post created successfully', post: newPost }); // Respond with the created post.
+  } catch (error) { // Catch and handle any post creation errors.
+    console.error(error); // Log the error for debugging.
+    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
+  }
+}); // End the post creation route.
+
+// Get all posts for the authenticated user
+app.get('/posts', authenticateJWT, async (req, res) => { // Handle requests to fetch posts for authenticated users.
+  try { // Start posts retrieval flow with error handling.
+    // Fetch posts for the logged-in user
+    const posts = await Post.find({ userId: req.user.userId }); // Query posts for the current user.
+    res.json({ posts }); // Return the user's posts.
+  } catch (error) { // Catch and handle any retrieval errors.
+    console.error(error); // Log the error for debugging.
+    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
+  }
+}); // End the posts retrieval route.
 
 // Insert your post updation code here.
 
