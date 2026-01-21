@@ -103,6 +103,27 @@ app.post('/register', async (req, res) => { // Handle user registration requests
 }); // End the registration route.
 
 // Insert your user login code here.
+app.post('/login', async (req, res) => { // Handle user login requests.
+  const { username, password } = req.body; // Extract login credentials from the request body.
+
+  try { // Start login flow with error handling.
+    // Check if the user exists with the provided credentials
+    const user = await User.findOne({ username, password }); // Find a matching user by username and password.
+
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' }); // Reject invalid login attempts.
+
+    // Generate JWT token and store in session
+    const token = jwt.sign({ userId: user._id, username: user.username }, SECRET_KEY, { expiresIn: '1h' }); // Sign a JWT with a 1-hour expiration.
+    req.session.token = token; // Store the token in the session for later authentication.
+
+    // Respond with a success message
+    res.send({ message: `${user.username} has logged in` }); // Send a successful login response.
+  } catch (error) { // Catch and handle any login errors.
+    console.error(error); // Log the error for debugging.
+    // Handle server errors
+    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
+  }
+}); // End the login route.
 
 // Insert your post creation code here.
 
