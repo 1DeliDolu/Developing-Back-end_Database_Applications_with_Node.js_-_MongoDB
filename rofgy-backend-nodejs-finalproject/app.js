@@ -181,6 +181,22 @@ app.put('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post 
 }); // End the post update route.
 
 // Insert your post deletion code here.
+app.delete('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post deletion requests for authenticated users.
+  const postId = req.params.postId; // Extract post ID from route params.
+
+  try { // Start post deletion flow with error handling.
+    // Find and delete the post, ensuring it's owned by the authenticated user
+    const post = await Post.findOneAndDelete({ _id: postId, userId: req.user.userId }); // Delete the post if it belongs to the user.
+
+    // Return error if post not found
+    if (!post) return res.status(404).json({ message: 'Post not found' }); // Handle missing posts.
+
+    res.json({ message: 'Post deleted successfully', deletedPost: post }); // Respond with the deleted post.
+  } catch (error) { // Catch and handle any deletion errors.
+    console.error(error); // Log the error for debugging.
+    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
+  }
+}); // End the post deletion route.
 
 // Insert your user logout code here.
 
