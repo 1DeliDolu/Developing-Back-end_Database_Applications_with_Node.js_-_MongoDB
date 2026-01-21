@@ -52,8 +52,21 @@ function authenticateJWT(req, res, next) {
     return res.status(401).json({ message: 'Invalid token' });
   }
 }
-
 // Insert your requireAuth Function code here.
+
+function requireAuth(req, res, next) {
+  const token = req.session.token; // Retrieve token from session
+
+  if (!token) return res.redirect('/login'); // If no token, redirect to login page
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
+    req.user = decoded; // Attach decoded user data to the request
+    next(); // Pass control to the next middleware/route
+  } catch (error) {
+    return res.redirect('/login'); // If token is invalid, redirect to login page
+  }
+}
 
 // Insert your routing HTML code here.
 
