@@ -1,72 +1,72 @@
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const session = require('express-session');
-const mongoose = require('mongoose');
+const path = require('path'); // Load path utilities for filesystem paths.
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') }); // Load environment variables from the repo .env file.
+const express = require('express'); // Import Express framework.
+const jwt = require('jsonwebtoken'); // Import JSON Web Token utilities.
+const session = require('express-session'); // Import session middleware.
+const mongoose = require('mongoose'); // Import Mongoose ODM.
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
+const app = express(); // Create the Express application instance.
+const PORT = process.env.PORT || 3000; // Read the server port from env or default to 3000.
+const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key'; // Read the secret key from env or use a fallback.
 
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false); // Allow flexible query filters in Mongoose.
 
-const mongoUser = process.env.MONGO_USERNAME || 'root';
-const mongoPassword = process.env.MONGO_PASSWORD || '<replace password>';
-const mongoHost = process.env.MONGO_HOST || 'localhost';
-const mongoPort = process.env.MONGO_PORT || '27017';
-const mongoDb = process.env.MONGO_DB || 'SocialDB';
-const mongoCommand = process.env.MONGO_COMMAND || '';
-const mongoUriFromCommand = mongoCommand.startsWith('mongosh ')
-  ? mongoCommand.replace(/^mongosh\s+/, '')
-  : mongoCommand;
-const uri = mongoUriFromCommand || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDb}`;
-mongoose.connect(uri, { dbName: mongoDb });
+const mongoUser = process.env.MONGO_USERNAME || 'root'; // Read MongoDB username from env.
+const mongoPassword = process.env.MONGO_PASSWORD || '<replace password>'; // Read MongoDB password from env.
+const mongoHost = process.env.MONGO_HOST || 'localhost'; // Read MongoDB host from env.
+const mongoPort = process.env.MONGO_PORT || '27017'; // Read MongoDB port from env.
+const mongoDb = process.env.MONGO_DB || 'SocialDB'; // Read MongoDB database name from env.
+const mongoCommand = process.env.MONGO_COMMAND || ''; // Read optional mongosh command from env.
+const mongoUriFromCommand = mongoCommand.startsWith('mongosh ') // Detect a mongosh command prefix.
+  ? mongoCommand.replace(/^mongosh\s+/, '') // Strip mongosh to keep only the URI.
+  : mongoCommand; // Use the command value as-is if it's already a URI.
+const uri = mongoUriFromCommand || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDb}`; // Build MongoDB connection URI.
+mongoose.connect(uri, { dbName: mongoDb }); // Connect to MongoDB using Mongoose.
 
-const User = mongoose.model('User', { username: String, email: String, password: String });
-const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String });
+const User = mongoose.model('User', { username: String, email: String, password: String }); // Define the User model.
+const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String }); // Define the Post model.
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, cookie: { secure: false } }));
+app.use(express.json()); // Enable JSON body parsing.
+app.use(express.urlencoded({ extended: true })); // Enable URL-encoded body parsing.
+app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, cookie: { secure: false } })); // Configure session handling.
 
 
-function authenticateJWT(req, res, next) {
+function authenticateJWT(req, res, next) { // Middleware to authenticate users using a JWT stored in the session.
   // Get token from session
-  const token = req.session.token;
+  const token = req.session.token; // Read the token from the session.
 
   // If no token, return 401 Unauthorized
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+  if (!token) return res.status(401).json({ message: 'Unauthorized' }); // Reject requests without a token.
 
-  try {
+  try { // Attempt to verify the provided token.
     // Verify token
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key.
 
     // Attach user data to request
-    req.user = decoded;
+    req.user = decoded; // Attach decoded user data to the request.
 
     // Continue to the next middleware
-    next();
-  } catch (error) {
+    next(); // Continue to the next middleware.
+  } catch (error) { // Handle token verification failures.
     // If invalid token, return 401
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-}
+    return res.status(401).json({ message: 'Invalid token' }); // Reject invalid or expired tokens.
+  } // End token verification block.
+} // End authenticateJWT middleware.
 // Insert your requireAuth Function code here.
 
-function requireAuth(req, res, next) {
+function requireAuth(req, res, next) { // Middleware to enforce authentication for HTML routes.
   const token = req.session.token; // Retrieve token from session
 
   if (!token) return res.redirect('/login'); // If no token, redirect to login page
 
-  try {
+  try { // Verify the token and proceed if valid.
     const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
     req.user = decoded; // Attach decoded user data to the request
     next(); // Pass control to the next middleware/route
-  } catch (error) {
+  } catch (error) { // Handle invalid or expired tokens.
     return res.redirect('/login'); // If token is invalid, redirect to login page
-  }
-}
+  } // End token validation block.
+} // End requireAuth middleware.
 
 // Insert your routing HTML code here.
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'))); // Serve the home page HTML.
@@ -99,7 +99,7 @@ app.post('/register', async (req, res) => { // Handle user registration requests
     console.error(error); // Log the error for debugging.
     // Handle server errors
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End registration error handling block.
 }); // End the registration route.
 
 // Insert your user login code here.
@@ -122,7 +122,7 @@ app.post('/login', async (req, res) => { // Handle user login requests.
     console.error(error); // Log the error for debugging.
     // Handle server errors
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End login error handling block.
 }); // End the login route.
 
 // Insert your post creation code here.
@@ -132,7 +132,7 @@ app.post('/post', authenticateJWT, async (req, res) => { // Handle post creation
   // Validate post content
   if (!text || typeof text !== 'string') { // Ensure the post text is present and a string.
     return res.status(400).json({ message: 'Please provide valid post content' }); // Reject invalid post content.
-  }
+  } // End post content validation block.
 
   try { // Start post creation flow with error handling.
     // Create and save new post with userId
@@ -142,7 +142,7 @@ app.post('/post', authenticateJWT, async (req, res) => { // Handle post creation
   } catch (error) { // Catch and handle any post creation errors.
     console.error(error); // Log the error for debugging.
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End post creation error handling block.
 }); // End the post creation route.
 
 // Get all posts for the authenticated user
@@ -154,7 +154,7 @@ app.get('/posts', authenticateJWT, async (req, res) => { // Handle requests to f
   } catch (error) { // Catch and handle any retrieval errors.
     console.error(error); // Log the error for debugging.
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End posts retrieval error handling block.
 }); // End the posts retrieval route.
 
 // Insert your post updation code here.
@@ -164,11 +164,11 @@ app.put('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post 
 
   try { // Start post update flow with error handling.
     // Find and update the post, ensuring it's owned by the authenticated user
-    const post = await Post.findOneAndUpdate(
+    const post = await Post.findOneAndUpdate( // Find and update the target post.
       { _id: postId, userId: req.user.userId }, // Match the post by ID and owner.
       { text }, // Apply the updated text.
       { new: true } // Return updated post.
-    );
+    ); // Finish the update query.
 
     // Return error if post not found
     if (!post) return res.status(404).json({ message: 'Post not found' }); // Handle missing posts.
@@ -177,7 +177,7 @@ app.put('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post 
   } catch (error) { // Catch and handle any update errors.
     console.error(error); // Log the error for debugging.
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End post update error handling block.
 }); // End the post update route.
 
 // Insert your post deletion code here.
@@ -195,7 +195,7 @@ app.delete('/posts/:postId', authenticateJWT, async (req, res) => { // Handle po
   } catch (error) { // Catch and handle any deletion errors.
     console.error(error); // Log the error for debugging.
     res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  }
+  } // End post deletion error handling block.
 }); // End the post deletion route.
 
 // Insert your user logout code here.
@@ -206,4 +206,4 @@ app.get('/logout', (req, res) => { // Handle logout requests.
   }); // Finish session destruction callback.
 }); // End the logout route.
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Start the server and log the active port.
