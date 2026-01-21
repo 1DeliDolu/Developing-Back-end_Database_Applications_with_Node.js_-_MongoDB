@@ -1,1 +1,36 @@
 // Insert your login.html code here.
+<!DOCTYPE html> <!-- Document type declaration for HTML5. -->
+<html lang="en"> <!-- Root element with English language. -->
+<head> <!-- Document metadata container. -->
+    <meta charset="UTF-8"> <!-- Use UTF-8 character encoding. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive viewport settings. -->
+    <title>Login</title> <!-- Page title shown in the browser tab. -->
+    <style> /* Start inline CSS styling. */
+        body{font-family:Arial,sans-serif;background-color:#f8f8f8;margin:0} /* Base page styles. */
+        .container{max-width:400px;margin:50px auto;padding:20px;background-color:#fff;box-shadow:0 0 10px rgba(0,0,0,.1);border-radius:8px} /* Centered card container styles. */
+        h1{color:#333;font-size:2em;margin-bottom:20px} /* Heading styles. */
+        .auth-form label{display:block;margin-bottom:8px;font-weight:bold} /* Label styles. */
+        .auth-form input{width:100%;padding:10px;margin-bottom:15px;border:1px solid #ccc;border-radius:5px;box-sizing:border-box} /* Input styles. */
+        .auth-form button{background-color:#0077cc;color:#fff;padding:10px 20px;border:none;border-radius:5px;cursor:pointer} /* Button styles. */
+        .auth-form button:hover{background-color:#005faa} /* Button hover styles. */
+        p{margin-top:20px;font-size:1.2em} /* Paragraph styles. */
+        p a{color:#0077cc;font-weight:bold;text-decoration:none} /* Link styles. */
+        p a:hover{text-decoration:underline} /* Link hover styles. */
+    </style> <!-- End inline CSS styling. -->
+</head> <!-- End document metadata container. -->
+<body> <!-- Page content container. -->
+    <div class="container"> <!-- Centered layout wrapper. -->
+        <h1>Login</h1> <!-- Page heading. -->
+        <form action="/login" method="post" class="auth-form"> <!-- Login form targeting the /login endpoint. -->
+            <label for="username">Username:</label> <!-- Username label. -->
+            <input type="text" id="username" name="username" required> <!-- Username input field. -->
+            <br> <!-- Line break for spacing. -->
+            <label for="password">Password:</label> <!-- Password label. -->
+            <input type="password" id="password" name="password" required> <!-- Password input field. -->
+            <br> <!-- Line break for spacing. -->
+            <button type="submit">Login</button> <!-- Submit button. -->
+        </form> <!-- End login form. -->
+        <p>Don't have an account? <a href="/register">Register here</a>.</p> <!-- Link to registration page. -->
+    </div> <!-- End container. -->
+</body> <!-- End page content container. -->
+</html> <!-- End of HTML document. -->

@@ -12,17 +12,8 @@ const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key'; // Read the secr
 
 mongoose.set('strictQuery', false); // Allow flexible query filters in Mongoose.
 
-const mongoUser = process.env.MONGO_USERNAME || 'root'; // Read MongoDB username from env.
-const mongoPassword = process.env.MONGO_PASSWORD || '<replace password>'; // Read MongoDB password from env.
-const mongoHost = process.env.MONGO_HOST || 'localhost'; // Read MongoDB host from env.
-const mongoPort = process.env.MONGO_PORT || '27017'; // Read MongoDB port from env.
-const mongoDb = process.env.MONGO_DB || 'SocialDB'; // Read MongoDB database name from env.
-const mongoCommand = process.env.MONGO_COMMAND || ''; // Read optional mongosh command from env.
-const mongoUriFromCommand = mongoCommand.startsWith('mongosh ') // Detect a mongosh command prefix.
-  ? mongoCommand.replace(/^mongosh\s+/, '') // Strip mongosh to keep only the URI.
-  : mongoCommand; // Use the command value as-is if it's already a URI.
-const uri = mongoUriFromCommand || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDb}`; // Build MongoDB connection URI.
-mongoose.connect(uri, { dbName: mongoDb }); // Connect to MongoDB using Mongoose.
+const uri = 'mongodb://mongodb:27017'; // Use the Docker Compose MongoDB service address.
+mongoose.connect(uri, { dbName: 'SocialDB' }); // Connect to MongoDB using the SocialDB database.
 
 const User = mongoose.model('User', { username: String, email: String, password: String }); // Define the User model.
 const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String }); // Define the Post model.
@@ -95,7 +86,7 @@ app.post('/register', async (req, res) => { // Handle user registration requests
     req.session.token = token; // Store the token in the session for later authentication.
 
     // Respond with success message
-    res.send({ message: `The user ${username} has been added` }); // Send a success response.
+    res.redirect(`/index?username=${newUser.username}`); // Redirect to index with the username parameter.
   } catch (error) { // Catch and handle any registration errors.
     console.error(error); // Log the error for debugging.
     // Handle server errors
@@ -118,7 +109,7 @@ app.post('/login', async (req, res) => { // Handle user login requests.
     req.session.token = token; // Store the token in the session for later authentication.
 
     // Respond with a success message
-    res.send({ message: `${user.username} has logged in` }); // Send a successful login response.
+    res.redirect(`/index?username=${user.username}`); // Redirect to index with the username parameter.
   } catch (error) { // Catch and handle any login errors.
     console.error(error); // Log the error for debugging.
     // Handle server errors
