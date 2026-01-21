@@ -69,8 +69,38 @@ function requireAuth(req, res, next) {
 }
 
 // Insert your routing HTML code here.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'))); // Serve the home page HTML.
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html'))); // Serve the registration page HTML.
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html'))); // Serve the login page HTML.
+app.get('/post', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'post.html'))); // Serve the post page HTML only for authenticated users.
+app.get('/index', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'), { username: req.user.username })); // Serve the index page with user context after authentication.
 
 // Insert your user registration code here.
+app.post('/register', async (req, res) => { // Handle user registration requests.
+  const { username, email, password } = req.body; // Extract registration fields from the request body.
+
+  try { // Start registration flow with error handling.
+    // Check if the user already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] }); // Look up any user with the same username or email.
+
+    if (existingUser) return res.status(400).json({ message: 'User already exists' }); // Reject duplicate registrations.
+
+    // Create and save the new user
+    const newUser = new User({ username, email, password }); // Create a new user document.
+    await newUser.save(); // Persist the new user to the database.
+
+    // Generate JWT token and store in session
+    const token = jwt.sign({ userId: newUser._id, username: newUser.username }, SECRET_KEY, { expiresIn: '1h' }); // Sign a JWT with a 1-hour expiration.
+    req.session.token = token; // Store the token in the session for later authentication.
+
+    // Respond with success message
+    res.send({ message: `The user ${username} has been added` }); // Send a success response.
+  } catch (error) { // Catch and handle any registration errors.
+    console.error(error); // Log the error for debugging.
+    // Handle server errors
+    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
+  }
+}); // End the registration route.
 
 // Insert your user login code here.
 
