@@ -7,6 +7,7 @@ const mongoose = require('mongoose'); // Import Mongoose ODM.
 
 const app = express(); // Create the Express application instance.
 const PORT = process.env.PORT || 3000; // Read the server port from env or default to 3000.
+const HOST = process.env.HOST || '127.0.0.1'; // Bind the server to localhost by default.
 const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key'; // Read the secret key from env or use a fallback.
 
 mongoose.set('strictQuery', false); // Allow flexible query filters in Mongoose.
@@ -206,4 +207,4 @@ app.get('/logout', (req, res) => { // Handle logout requests.
   }); // Finish session destruction callback.
 }); // End the logout route.
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)); // Start the server and log the active port.
+app.listen(PORT, HOST, () => console.log(`Server is running on http://${HOST}:${PORT}`)); // Start the server and log the active address.
