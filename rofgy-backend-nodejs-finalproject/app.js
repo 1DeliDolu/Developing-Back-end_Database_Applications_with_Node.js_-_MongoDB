@@ -1,17 +1,27 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
-const path = require('path');
 const mongoose = require('mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SECRET_KEY = 'your_secret_key';
+const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key';
 
 mongoose.set('strictQuery', false);
 
-const uri =  "mongodb://root:<replace password>@localhost:27017";
-mongoose.connect(uri,{'dbName':'SocialDB'});
+const mongoUser = process.env.MONGO_USERNAME || 'root';
+const mongoPassword = process.env.MONGO_PASSWORD || '<replace password>';
+const mongoHost = process.env.MONGO_HOST || 'localhost';
+const mongoPort = process.env.MONGO_PORT || '27017';
+const mongoDb = process.env.MONGO_DB || 'SocialDB';
+const mongoCommand = process.env.MONGO_COMMAND || '';
+const mongoUriFromCommand = mongoCommand.startsWith('mongosh ')
+  ? mongoCommand.replace(/^mongosh\s+/, '')
+  : mongoCommand;
+const uri = mongoUriFromCommand || `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDb}`;
+mongoose.connect(uri, { dbName: mongoDb });
 
 const User = mongoose.model('User', { username: String, email: String, password: String });
 const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String });
