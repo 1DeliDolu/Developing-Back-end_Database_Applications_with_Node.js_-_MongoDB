@@ -1,201 +1,199 @@
-const path = require('path'); // Load path utilities for filesystem paths.
-require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') }); // Load environment variables from the repo .env file.
-const express = require('express'); // Import Express framework.
-const jwt = require('jsonwebtoken'); // Import JSON Web Token utilities.
-const session = require('express-session'); // Import session middleware.
-const mongoose = require('mongoose'); // Import Mongoose ODM.
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const session = require('express-session');
+const path = require('path');
+const mongoose = require('mongoose');
 
-const app = express(); // Create the Express application instance.
-const PORT = process.env.PORT || 3000; // Read the server port from env or default to 3000.
-const HOST = process.env.HOST || '127.0.0.1'; // Bind the server to localhost by default.
-const SECRET_KEY = process.env.SECRET_KEY || 'your_secret_key'; // Read the secret key from env or use a fallback.
+const app = express();
+const PORT = process.env.PORT || 3000;
+const SECRET_KEY = 'your_secret_key';
 
-mongoose.set('strictQuery', false); // Allow flexible query filters in Mongoose.
+mongoose.set('strictQuery', false);
 
-const uri = 'mongodb://mongodb:27017'; // Use the Docker Compose MongoDB service address.
-mongoose.connect(uri, { dbName: 'SocialDB' }); // Connect to MongoDB using the SocialDB database.
+const uri = "mongodb://root:<replace passwaord>@<replace mongo host>:27017";
+mongoose.connect(uri, { 'dbName': 'SocialDB' });
 
-const User = mongoose.model('User', { username: String, email: String, password: String }); // Define the User model.
-const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String }); // Define the Post model.
+const User = mongoose.model('User', { username: String, email: String, password: String });
+const Post = mongoose.model('Post', { userId: mongoose.Schema.Types.ObjectId, text: String });
 
-app.use(express.json()); // Enable JSON body parsing.
-app.use(express.urlencoded({ extended: true })); // Enable URL-encoded body parsing.
-app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, cookie: { secure: false } })); // Configure session handling.
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, cookie: { secure: false } }));
 
 
-function authenticateJWT(req, res, next) { // Middleware to authenticate users using a JWT stored in the session.
+// Insert your authenticateJWT Function code here.
+function authenticateJWT(req, res, next) {
   // Get token from session
-  const token = req.session.token; // Read the token from the session.
+  const token = req.session.token;
 
   // If no token, return 401 Unauthorized
-  if (!token) return res.status(401).json({ message: 'Unauthorized' }); // Reject requests without a token.
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
-  try { // Attempt to verify the provided token.
+  try {
     // Verify token
-    const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key.
+    const decoded = jwt.verify(token, SECRET_KEY);
 
     // Attach user data to request
-    req.user = decoded; // Attach decoded user data to the request.
+    req.user = decoded;
 
     // Continue to the next middleware
-    next(); // Continue to the next middleware.
-  } catch (error) { // Handle token verification failures.
+    next();
+  } catch (error) {
     // If invalid token, return 401
-    return res.status(401).json({ message: 'Invalid token' }); // Reject invalid or expired tokens.
-  } // End token verification block.
-} // End authenticateJWT middleware.
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+}
+
 // Insert your requireAuth Function code here.
+function requireAuth(req, res, next) {
+  const token = req.session.token;  // Retrieve token from session
 
-function requireAuth(req, res, next) { // Middleware to enforce authentication for HTML routes.
-  const token = req.session.token; // Retrieve token from session
+  if (!token) return res.redirect('/login');  // If no token, redirect to login page
 
-  if (!token) return res.redirect('/login'); // If no token, redirect to login page
-
-  try { // Verify the token and proceed if valid.
-    const decoded = jwt.verify(token, SECRET_KEY); // Verify the token using the secret key
-    req.user = decoded; // Attach decoded user data to the request
-    next(); // Pass control to the next middleware/route
-  } catch (error) { // Handle invalid or expired tokens.
-    return res.redirect('/login'); // If token is invalid, redirect to login page
-  } // End token validation block.
-} // End requireAuth middleware.
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);  // Verify the token using the secret key
+    req.user = decoded;  // Attach decoded user data to the request
+    next();  // Pass control to the next middleware/route
+  } catch (error) {
+    return res.redirect('/login');  // If token is invalid, redirect to login page
+  }
+}
 
 // Insert your routing HTML code here.
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'))); // Serve the home page HTML.
-app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html'))); // Serve the registration page HTML.
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html'))); // Serve the login page HTML.
-app.get('/post', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'post.html'))); // Serve the post page HTML only for authenticated users.
-app.get('/index', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'), { username: req.user.username })); // Serve the index page with user context after authentication.
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/post', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'post.html')));
+app.get('/index', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html'), { username: req.user.username }));
 
 // Insert your user registration code here.
-app.post('/register', async (req, res) => { // Handle user registration requests.
-  const { username, email, password } = req.body; // Extract registration fields from the request body.
+app.post('/register', async (req, res) => {
+  const { username, email, password } = req.body;
 
-  try { // Start registration flow with error handling.
+  try {
     // Check if the user already exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] }); // Look up any user with the same username or email.
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
 
-    if (existingUser) return res.status(400).json({ message: 'User already exists' }); // Reject duplicate registrations.
+    if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
     // Create and save the new user
-    const newUser = new User({ username, email, password }); // Create a new user document.
-    await newUser.save(); // Persist the new user to the database.
+    const newUser = new User({ username, email, password });
+    await newUser.save();
 
     // Generate JWT token and store in session
-    const token = jwt.sign({ userId: newUser._id, username: newUser.username }, SECRET_KEY, { expiresIn: '1h' }); // Sign a JWT with a 1-hour expiration.
-    req.session.token = token; // Store the token in the session for later authentication.
+    const token = jwt.sign({ userId: newUser._id, username: newUser.username }, SECRET_KEY, { expiresIn: '1h' });
+    req.session.token = token;
 
     // Respond with success message
-    res.redirect(`/index?username=${newUser.username}`); // Redirect to index with the username parameter.
-  } catch (error) { // Catch and handle any registration errors.
-    console.error(error); // Log the error for debugging.
+    res.send({ "message": `The user ${username} has been added` });
+  } catch (error) {
+    console.error(error);
     // Handle server errors
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End registration error handling block.
-}); // End the registration route.
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Insert your user login code here.
-app.post('/login', async (req, res) => { // Handle user login requests.
-  const { username, password } = req.body; // Extract login credentials from the request body.
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
 
-  try { // Start login flow with error handling.
+  try {
     // Check if the user exists with the provided credentials
-    const user = await User.findOne({ username, password }); // Find a matching user by username and password.
+    const user = await User.findOne({ username, password });
 
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' }); // Reject invalid login attempts.
+    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
     // Generate JWT token and store in session
-    const token = jwt.sign({ userId: user._id, username: user.username }, SECRET_KEY, { expiresIn: '1h' }); // Sign a JWT with a 1-hour expiration.
-    req.session.token = token; // Store the token in the session for later authentication.
+    const token = jwt.sign({ userId: user._id, username: user.username }, SECRET_KEY, { expiresIn: '1h' });
+    req.session.token = token;
 
     // Respond with a success message
-    res.redirect(`/index?username=${user.username}`); // Redirect to index with the username parameter.
-  } catch (error) { // Catch and handle any login errors.
-    console.error(error); // Log the error for debugging.
+    res.send({ "message": `${user.username} has logged in` });
+  } catch (error) {
+    console.error(error);
     // Handle server errors
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End login error handling block.
-}); // End the login route.
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Insert your post creation code here.
-app.post('/post', authenticateJWT, async (req, res) => { // Handle post creation requests for authenticated users.
-  const { text } = req.body; // Extract post text from the request body.
+app.post('/post', authenticateJWT, async (req, res) => {
+  const { text } = req.body;
 
   // Validate post content
-  if (!text || typeof text !== 'string') { // Ensure the post text is present and a string.
-    return res.status(400).json({ message: 'Please provide valid post content' }); // Reject invalid post content.
-  } // End post content validation block.
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ message: 'Please provide valid post content' });
+  }
 
-  try { // Start post creation flow with error handling.
+  try {
     // Create and save new post with userId
-    const newPost = new Post({ userId: req.user.userId, text }); // Create a post tied to the authenticated user.
-    await newPost.save(); // Persist the new post to the database.
-    res.status(201).json({ message: 'Post created successfully', post: newPost }); // Respond with the created post.
-  } catch (error) { // Catch and handle any post creation errors.
-    console.error(error); // Log the error for debugging.
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End post creation error handling block.
-}); // End the post creation route.
+    const newPost = new Post({ userId: req.user.userId, text });
+    await newPost.save();
+    res.status(201).json({ message: 'Post created successfully', post: newPost });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Get all posts for the authenticated user
-app.get('/posts', authenticateJWT, async (req, res) => { // Handle requests to fetch posts for authenticated users.
-  try { // Start posts retrieval flow with error handling.
+app.get('/posts', authenticateJWT, async (req, res) => {
+  try {
     // Fetch posts for the logged-in user
-    const posts = await Post.find({ userId: req.user.userId }); // Query posts for the current user.
-    res.json({ posts }); // Return the user's posts.
-  } catch (error) { // Catch and handle any retrieval errors.
-    console.error(error); // Log the error for debugging.
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End posts retrieval error handling block.
-}); // End the posts retrieval route.
+    const posts = await Post.find({ userId: req.user.userId });
+    res.json({ posts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Insert your post updation code here.
-app.put('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post update requests for authenticated users.
-  const postId = req.params.postId; // Extract post ID from route params.
-  const { text } = req.body; // Extract updated text from the request body.
+app.put('/posts/:postId', authenticateJWT, async (req, res) => {
+  const postId = req.params.postId;
+  const { text } = req.body;
 
-  try { // Start post update flow with error handling.
+  try {
     // Find and update the post, ensuring it's owned by the authenticated user
-    const post = await Post.findOneAndUpdate( // Find and update the target post.
-      { _id: postId, userId: req.user.userId }, // Match the post by ID and owner.
-      { text }, // Apply the updated text.
-      { new: true } // Return updated post.
-    ); // Finish the update query.
+    const post = await Post.findOneAndUpdate(
+      { _id: postId, userId: req.user.userId },
+      { text },
+      { new: true } // Return updated post
+    );
 
     // Return error if post not found
-    if (!post) return res.status(404).json({ message: 'Post not found' }); // Handle missing posts.
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    res.json({ message: 'Post updated successfully', updatedPost: post }); // Respond with the updated post.
-  } catch (error) { // Catch and handle any update errors.
-    console.error(error); // Log the error for debugging.
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End post update error handling block.
-}); // End the post update route.
+    res.json({ message: 'Post updated successfully', updatedPost: post });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Insert your post deletion code here.
-app.delete('/posts/:postId', authenticateJWT, async (req, res) => { // Handle post deletion requests for authenticated users.
-  const postId = req.params.postId; // Extract post ID from route params.
+app.delete('/posts/:postId', authenticateJWT, async (req, res) => {
+  const postId = req.params.postId;
 
-  try { // Start post deletion flow with error handling.
+  try {
     // Find and delete the post, ensuring it's owned by the authenticated user
-    const post = await Post.findOneAndDelete({ _id: postId, userId: req.user.userId }); // Delete the post if it belongs to the user.
+    const post = await Post.findOneAndDelete({ _id: postId, userId: req.user.userId });
 
     // Return error if post not found
-    if (!post) return res.status(404).json({ message: 'Post not found' }); // Handle missing posts.
+    if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    res.json({ message: 'Post deleted successfully', deletedPost: post }); // Respond with the deleted post.
-  } catch (error) { // Catch and handle any deletion errors.
-    console.error(error); // Log the error for debugging.
-    res.status(500).json({ message: 'Internal Server Error' }); // Return a generic server error response.
-  } // End post deletion error handling block.
-}); // End the post deletion route.
+    res.json({ message: 'Post deleted successfully', deletedPost: post });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // Insert your user logout code here.
-app.get('/logout', (req, res) => { // Handle logout requests.
-  req.session.destroy((err) => { // Destroy the session to clear authentication data.
-    if (err) console.error(err); // Log any session destruction errors.
-    res.redirect('/login'); // Redirect to login page after logout.
-  }); // Finish session destruction callback.
-}); // End the logout route.
-
-app.listen(PORT, HOST, () => console.log(`Server is running on http://${HOST}:${PORT}`)); // Start the server and log the active address.
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) console.error(err); // Log any session destruction errors
+    res.redirect('/login'); // Redirect to login page after logout
+  });
+});
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

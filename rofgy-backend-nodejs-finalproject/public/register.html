@@ -1,83 +1,91 @@
-// Insert your register.html code here.
-<!DOCTYPE html> <!-- Document type declaration for HTML5. -->
-<html lang="en"> <!-- Root element with English language. -->
-<head> <!-- Document metadata container. -->
-    <meta charset="UTF-8"> <!-- Use UTF-8 character encoding. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive viewport settings. -->
-    <title>Register</title> <!-- Page title shown in the browser tab. -->
-    <style> /* Start inline CSS styling. */
-        body { /* Base page styles. */
-            font-family: 'Arial', sans-serif; /* Set default font family. */
-            background-color: #f8f8f8; /* Set light gray page background. */
-            margin: 0; /* Remove default margin. */
-        } /* End body styles. */
-        .container { /* Centered card container styles. */
-            max-width: 400px; /* Set maximum width of the form container. */
-            margin: 50px auto; /* Center horizontally with top spacing. */
-            padding: 20px; /* Add padding inside the container. */
-            background-color: #fff; /* Set container background to white. */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add soft shadow for depth. */
-            border-radius: 8px; /* Round the container corners. */
-        } /* End container styles. */
-        h1 { /* Heading styles. */
-            color: #333; /* Use dark gray text color. */
-            font-size: 2em; /* Set heading size. */
-            margin-bottom: 20px; /* Add spacing below heading. */
-        } /* End h1 styles. */
-        .auth-form label { /* Label styles. */
-            display: block; /* Force labels onto new lines. */
-            margin-bottom: 8px; /* Add spacing below labels. */
-            font-weight: bold; /* Make label text bold. */
-        } /* End label styles. */
-        .auth-form input { /* Input styles. */
-            width: 100%; /* Make inputs full width. */
-            padding: 10px; /* Add padding inside inputs. */
-            margin-bottom: 15px; /* Add spacing below inputs. */
-            border: 1px solid #ccc; /* Add light gray border. */
-            border-radius: 5px; /* Round the input corners. */
-            box-sizing: border-box; /* Include padding and border in width. */
-        } /* End input styles. */
-        .auth-form button { /* Button styles. */
-            background-color: #0077cc; /* Set button background to blue. */
-            color: #fff; /* Set button text color to white. */
-            padding: 10px 20px; /* Add padding inside the button. */
-            border: none; /* Remove default border. */
-            border-radius: 5px; /* Round the button corners. */
-            cursor: pointer; /* Show pointer cursor on hover. */
-        } /* End button styles. */
-        .auth-form button:hover { /* Button hover styles. */
-            background-color: #005faa; /* Darken the button on hover. */
-        } /* End button hover styles. */
-        p { /* Paragraph styles. */
-            margin-top: 20px; /* Add spacing above paragraph. */
-            font-size: 1.2em; /* Increase paragraph font size. */
-        } /* End paragraph styles. */
-        p a { /* Link styles. */
-            color: #0077cc; /* Set link color to blue. */
-            font-weight: bold; /* Make link text bold. */
-            text-decoration: none; /* Remove underline from links. */
-        } /* End link styles. */
-        p a:hover { /* Link hover styles. */
-            text-decoration: underline; /* Underline link on hover. */
-        } /* End link hover styles. */
-    </style> <!-- End inline CSS styling. -->
-</head> <!-- End document metadata container. -->
-<body> <!-- Page content container. -->
-    <div class="container"> <!-- Centered layout wrapper. -->
-        <h1>Register</h1> <!-- Page heading. -->
-        <form action="/register" method="post" class="auth-form"> <!-- Registration form targeting the /register endpoint. -->
-            <label for="username">Username:</label> <!-- Username label. -->
-            <input type="text" id="username" name="username" required> <!-- Username input field. -->
-            <br> <!-- Line break for spacing. -->
-            <label for="email">Email:</label> <!-- Email label. -->
-            <input type="email" id="email" name="email" required> <!-- Email input field. -->
-            <br> <!-- Line break for spacing. -->
-            <label for="password">Password:</label> <!-- Password label. -->
-            <input type="password" id="password" name="password" required> <!-- Password input field. -->
-            <br> <!-- Line break for spacing. -->
-            <button type="submit">Register</button> <!-- Submit button. -->
-        </form> <!-- End registration form. -->
-        <p>Already have an account? <a href="/login">Login here</a>.</p> <!-- Link to login page. -->
-    </div> <!-- End container. -->
-</body> <!-- End page content container. -->
-</html> <!-- End of HTML document. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .auth-form button {
+            background-color: #0077cc;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .auth-form button:hover {
+            background-color: #005faa;
+        }
+
+        p {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        p a {
+            color: #0077cc;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form action="/register" method="post" class="auth-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login here</a>.</p>
+    </div>
+</body>
+</html>

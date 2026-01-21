@@ -1,257 +1,277 @@
-// Insert your post.html code here.
-<!DOCTYPE html> <!-- Document type declaration for HTML5. -->
-<html lang="en"> <!-- Root element with English language. -->
-<head> <!-- Document metadata container. -->
-  <meta charset="UTF-8" /> <!-- Use UTF-8 character encoding. -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Responsive viewport settings. -->
-  <title>Create and Manage Posts</title> <!-- Page title shown in the browser tab. -->
-  <style> /* Start inline CSS styling. */
-    body { /* Base page layout styles. */
-      font-family: 'Roboto', sans-serif; /* Set default font family. */
-      background-color: #f5f5f5; /* Set light gray page background. */
-      text-align: center; /* Center-align text by default. */
-      margin: 0; /* Remove default margin. */
-      padding: 0; /* Remove default padding. */
-      box-sizing: border-box; /* Use border-box sizing for layout. */
-    } /* End body styles. */
-    header { /* Header area styles. */
-      background-color: #0077cc; /* Set header background color. */
-      color: #fff; /* Set header text color to white. */
-      padding: 20px; /* Add spacing inside header. */
-      text-align: right; /* Align header content to the right. */
-    } /* End header styles. */
-    h1 { /* Title styles. */
-      color: #333; /* Use dark gray text color. */
-      font-size: 2.5em; /* Increase title size. */
-      margin-bottom: 20px; /* Add spacing below the title. */
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Add subtle text shadow. */
-    } /* End h1 styles. */
-    .post-form, .post-list { /* Form and list container styles. */
-      width: 60%; /* Set container width. */
-      margin: 50px auto; /* Center containers with top margin. */
-      padding: 20px; /* Add padding inside containers. */
-      background-color: #fff; /* Set container background to white. */
-      border-radius: 8px; /* Round container corners. */
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add soft shadow. */
-    } /* End form and list container styles. */
-    label, textarea { /* Label and textarea styles. */
-      display: block; /* Force labels and textarea onto new lines. */
-      margin-bottom: 10px; /* Add spacing below elements. */
-      font-size: 1.2em; /* Increase text size. */
-      color: #333; /* Use dark gray text color. */
-    } /* End label and textarea styles. */
-    textarea { /* Textarea input styles. */
-      width: 100%; /* Make textarea full width. */
-      padding: 10px; /* Add padding inside textarea. */
-      margin-bottom: 20px; /* Add spacing below textarea. */
-      border: 1px solid #ccc; /* Add light gray border. */
-      border-radius: 4px; /* Round textarea corners. */
-      box-sizing: border-box; /* Include padding and border in width. */
-    } /* End textarea styles. */
-    button { /* Base button styles. */
-      background-color: #0099ff; /* Set button background to blue. */
-      color: #fff; /* Set button text color to white. */
-      padding: 10px 20px; /* Add padding inside buttons. */
-      font-size: 1.2em; /* Increase button text size. */
-      border: none; /* Remove default border. */
-      border-radius: 8px; /* Round the button corners. */
-      cursor: pointer; /* Show pointer cursor on hover. */
-    } /* End base button styles. */
-    .post { /* Individual post container styles. */
-      border-bottom: 1px solid #ccc; /* Add divider between posts. */
-      padding: 10px; /* Add spacing inside post row. */
-      margin-bottom: 10px; /* Add spacing below each post. */
-      display: flex; /* Use flex layout for post row. */
-      justify-content: space-between; /* Space content and buttons apart. */
-      align-items: center; /* Vertically center items. */
-    } /* End post styles. */
-    .post-text { /* Post text styles. */
-      flex-grow: 1; /* Allow text to take remaining space. */
-      margin-right: 10px; /* Add spacing to the right of the text. */
-      font-size: 1.1em; /* Slightly increase text size. */
-      color: #333; /* Use dark gray text color. */
-    } /* End post text styles. */
-    .edit-post-btn, .delete-post-btn { /* Edit and delete button styles. */
-      padding: 8px; /* Add padding inside buttons. */
-      margin-right: 5px; /* Add spacing between buttons. */
-      cursor: pointer; /* Show pointer cursor on hover. */
-      background-color: #0099ff; /* Set button background to blue. */
-      color: #fff; /* Set button text color to white. */
-      border: none; /* Remove default border. */
-      border-radius: 4px; /* Round the button corners. */
-    } /* End edit/delete button styles. */
-    .pagination { /* Pagination container styles. */
-      margin-top: 20px; /* Add spacing above pagination. */
-    } /* End pagination styles. */
-    .pagination button { /* Pagination button styles. */
-      background-color: #0099ff; /* Set pagination button background to blue. */
-      color: #fff; /* Set pagination button text color to white. */
-      border: none; /* Remove default border. */
-      padding: 10px; /* Add padding inside pagination buttons. */
-      margin: 0 5px; /* Add horizontal spacing between buttons. */
-      cursor: pointer; /* Show pointer cursor on hover. */
-      border-radius: 4px; /* Round pagination button corners. */
-      transition: background-color 0.3s; /* Animate background color change. */
-    } /* End pagination button styles. */
-    .pagination button:hover { /* Pagination hover styles. */
-      background-color: #0077cc; /* Darken the button on hover. */
-    } /* End pagination hover styles. */
-  </style> <!-- End inline CSS styling. -->
-</head> <!-- End document metadata container. -->
-<body> <!-- Page content container. -->
-  <header> <!-- Header section with logout control. -->
-    <button id="logoutBtn" onclick="logout()">Logout</button> <!-- Logout button. -->
-  </header> <!-- End header section. -->
-  <h1>Create and Manage Posts</h1> <!-- Main page heading. -->
-  <div class="post-form"> <!-- Container for the create post form. -->
-    <label for="text">Create a new post:</label> <!-- Post text label. -->
-    <textarea id="text" name="text" rows="4" required></textarea> <!-- Post content textarea. -->
-    <button onclick="createPost()">Create Post</button> <!-- Create post button. -->
-  </div> <!-- End post form container. -->
-  <div class="post-list" id="postList"></div> <!-- Container for post list output. -->
-  <div class="pagination" id="pagination"></div> <!-- Container for pagination buttons. -->
-  <script> // Start inline JavaScript.
-    const postsPerPage = 3; // Define how many posts to show per page.
-    let currentPage = 1; // Track the current page number.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create and Manage Posts</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    header {
+      background-color: #0077cc;
+      color: #fff;
+      padding: 20px;
+      text-align: right;
+    }
+    h1 {
+      color: #333;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .post-form, .post-list {
+      width: 60%;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label, textarea {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #0099ff;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .post {
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .post-text {
+      flex-grow: 1;
+      margin-right: 10px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    .edit-post-btn, .delete-post-btn {
+      padding: 8px;
+      margin-right: 5px;
+      cursor: pointer;
+      background-color: #0099ff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+    .pagination {
+      margin-top: 20px;
+    }
+    .pagination button {
+      background-color: #0099ff;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .pagination button:hover {
+      background-color: #0077cc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button id="logoutBtn" onclick="logout()">Logout</button>
+  </header>
+
+  <h1>Create and Manage Posts</h1>
+
+  <div class="post-form">
+    <label for="text">Create a new post:</label>
+    <textarea id="text" name="text" rows="4" required></textarea>
+    <button onclick="createPost()">Create Post</button>
+  </div>
+
+  <div class="post-list" id="postList"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    const postsPerPage = 3;
+    let currentPage = 1;
+
     // On page load, fetch the posts
-    document.addEventListener('DOMContentLoaded', () => { // Initialize when the DOM is ready.
-      getPosts(); // Fetch and render posts from the server.
-    }); // End DOMContentLoaded handler.
+    document.addEventListener('DOMContentLoaded', () => {
+      getPosts();
+    });
+
     // Create a new post
-    async function createPost() { // Send a request to create a new post.
-      const text = document.getElementById('text').value; // Read the post text input.
-      if (!text) return alert('Post text cannot be empty'); // Prevent empty posts.
-      try { // Start create-post request with error handling.
-        const response = await fetch('/post', { // Send POST request to create a post.
-          method: 'POST', // Use POST method.
-          headers: { 'Content-Type': 'application/json' }, // Send JSON content type.
-          body: JSON.stringify({ text }) // Include post text in the request body.
-        }); // End fetch request configuration.
-        const data = await response.json(); // Parse JSON response.
-        if (response.ok) { // Check for success response.
-          document.getElementById('text').value = ''; // Clear the textarea.
+    async function createPost() {
+      const text = document.getElementById('text').value;
+      if (!text) return alert('Post text cannot be empty');
+
+      try {
+        const response = await fetch('/post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById('text').value = '';
           currentPage = 1; // Reset to first page after new post
           getPosts(); // Refresh list
-        } else { // Handle server-side validation errors.
-          alert(data.message); // Show error message from server.
-        } // End response handling.
-      } catch (error) { // Catch network or runtime errors.
-        console.error('Error:', error); // Log error details to console.
-        alert('Error creating post'); // Show error alert to the user.
-      } // End create-post error handling.
-    } // End createPost function.
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating post');
+      }
+    }
+
     // Fetch posts from the server
-    async function getPosts() { // Retrieve posts for the current user.
-      try { // Start get-posts request with error handling.
-        const response = await fetch('/posts', { method: 'GET' }); // Request posts from the API.
-        const data = await response.json(); // Parse JSON response.
-        if (response.ok) { // Check for success response.
-          renderPosts(data.posts); // Render posts into the UI.
-        } else { // Handle non-OK responses.
-          console.error(data.message); // Log server error message.
-        } // End response handling.
-      } catch (error) { // Catch network or runtime errors.
-        console.error('Error:', error); // Log error details to console.
-      } // End get-posts error handling.
-    } // End getPosts function.
+    async function getPosts() {
+      try {
+        const response = await fetch('/posts', { method: 'GET' });
+        const data = await response.json();
+        if (response.ok) {
+          renderPosts(data.posts);
+        } else {
+          console.error(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
     // Render the posts into the DOM with pagination
-    function renderPosts(posts) { // Render posts list and pagination UI.
-      const postList = document.getElementById('postList'); // Get the post list container.
-      const pagination = document.getElementById('pagination'); // Get the pagination container.
-      postList.innerHTML = ''; // Clear existing posts.
-      if (posts.length === 0) { // Check if there are no posts.
-        postList.innerHTML = '<p>No posts available.</p>'; // Show empty state message.
-        pagination.innerHTML = ''; // Clear pagination when no posts exist.
-        return; // Exit early when there are no posts.
-      } // End empty list check.
+    function renderPosts(posts) {
+      const postList = document.getElementById('postList');
+      const pagination = document.getElementById('pagination');
+      postList.innerHTML = '';
+
+      if (posts.length === 0) {
+        postList.innerHTML = '<p>No posts available.</p>';
+        pagination.innerHTML = '';
+        return;
+      }
+
       // Calculate slice indices for the current page
-      const startIndex = (currentPage - 1) * postsPerPage; // Compute the starting index.
-      const endIndex = startIndex + postsPerPage; // Compute the ending index.
-      const paginatedPosts = posts.slice(startIndex, endIndex); // Slice posts for the current page.
+      const startIndex = (currentPage - 1) * postsPerPage;
+      const endIndex = startIndex + postsPerPage;
+      const paginatedPosts = posts.slice(startIndex, endIndex);
+
       // Render posts for the current page
-      paginatedPosts.forEach(post => { // Loop through paginated posts.
-        const postDiv = document.createElement('div'); // Create a post row container.
-        postDiv.className = 'post'; // Assign the post CSS class.
-        const postText = document.createElement('div'); // Create an element for post text.
-        postText.className = 'post-text'; // Assign the post text CSS class.
-        postText.textContent = post.text; // Set the post text content.
+      paginatedPosts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
+
+        const postText = document.createElement('div');
+        postText.className = 'post-text';
+        postText.textContent = post.text;
+
         // Edit button
-        const editButton = document.createElement('button'); // Create the edit button.
-        editButton.textContent = 'Edit'; // Set edit button label.
-        editButton.className = 'edit-post-btn'; // Assign edit button CSS class.
-        editButton.onclick = () => editPost(post); // Attach edit handler.
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.className = 'edit-post-btn';
+        editButton.onclick = () => editPost(post);
+
         // Delete button
-        const deleteButton = document.createElement('button'); // Create the delete button.
-        deleteButton.textContent = 'Delete'; // Set delete button label.
-        deleteButton.className = 'delete-post-btn'; // Assign delete button CSS class.
-        deleteButton.onclick = () => deletePost(post._id); // Attach delete handler.
-        postDiv.appendChild(postText); // Add post text to post row.
-        postDiv.appendChild(editButton); // Add edit button to post row.
-        postDiv.appendChild(deleteButton); // Add delete button to post row.
-        postList.appendChild(postDiv); // Add post row to the list.
-      }); // End paginated posts loop.
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'delete-post-btn';
+        deleteButton.onclick = () => deletePost(post._id);
+
+        postDiv.appendChild(postText);
+        postDiv.appendChild(editButton);
+        postDiv.appendChild(deleteButton);
+        postList.appendChild(postDiv);
+      });
+
       // Create pagination buttons
-      const totalPages = Math.ceil(posts.length / postsPerPage); // Calculate total number of pages.
-      pagination.innerHTML = ''; // Clear existing pagination buttons.
-      for (let i = 1; i <= totalPages; i++) { // Loop through page numbers.
-        const pageButton = document.createElement('button'); // Create a page button.
-        pageButton.textContent = i; // Set the page number label.
-        pageButton.onclick = () => { // Handle page button clicks.
-          currentPage = i; // Update the current page.
-          renderPosts(posts); // Re-render posts for the selected page.
-        }; // End page button click handler.
+      const totalPages = Math.ceil(posts.length / postsPerPage);
+      pagination.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.onclick = () => {
+          currentPage = i;
+          renderPosts(posts);
+        };
         // Highlight the active page button
-        if (i === currentPage) { // Check if this button is the current page.
-          pageButton.style.fontWeight = 'bold'; // Emphasize the active page button.
-        } // End active page highlight.
-        pagination.appendChild(pageButton); // Add the page button to the pagination container.
-      } // End pagination loop.
-    } // End renderPosts function.
+        if (i === currentPage) {
+          pageButton.style.fontWeight = 'bold';
+        }
+        pagination.appendChild(pageButton);
+      }
+    }
+
     // Prompt for editing and then update the post
-    function editPost(post) { // Open a prompt to edit the post.
-      const newText = prompt('Edit your post:', post.text); // Ask for updated post text.
-      if (newText !== null && newText !== post.text) { // Validate the new text.
-        updatePost(post._id, newText); // Send update request.
-      } // End edit validation.
-    } // End editPost function.
+    function editPost(post) {
+      const newText = prompt('Edit your post:', post.text);
+      if (newText !== null && newText !== post.text) {
+        updatePost(post._id, newText);
+      }
+    }
+
     // Update a post via the API
-    async function updatePost(postId, text) { // Send a request to update a post.
-      try { // Start update-post request with error handling.
-        const response = await fetch(`/posts/${postId}`, { // Send PUT request to update the post.
-          method: 'PUT', // Use PUT method.
-          headers: { 'Content-Type': 'application/json' }, // Send JSON content type.
-          body: JSON.stringify({ text }) // Include updated text in the request body.
-        }); // End fetch request configuration.
-        const data = await response.json(); // Parse JSON response.
-        if (response.ok) { // Check for success response.
+    async function updatePost(postId, text) {
+      try {
+        const response = await fetch(`/posts/${postId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await response.json();
+        if (response.ok) {
           getPosts(); // Refresh list
-        } else { // Handle server-side errors.
-          alert(data.message); // Show error message from server.
-        } // End response handling.
-      } catch (error) { // Catch network or runtime errors.
-        console.error('Error:', error); // Log error details to console.
-        alert('Error updating post'); // Show error alert to the user.
-      } // End update-post error handling.
-    } // End updatePost function.
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating post');
+      }
+    }
+
     // Delete a post via the API
-    async function deletePost(postId) { // Send a request to delete a post.
-      try { // Start delete-post request with error handling.
-        const response = await fetch(`/posts/${postId}`, { method: 'DELETE' }); // Send DELETE request to remove the post.
-        const data = await response.json(); // Parse JSON response.
-        if (response.ok) { // Check for success response.
-          getPosts(); // Refresh list
-        } else { // Handle server-side errors.
-          alert(data.message); // Show error message from server.
-        } // End response handling.
-      } catch (error) { // Catch network or runtime errors.
-        console.error('Error:', error); // Log error details to console.
-        alert('Error deleting post'); // Show error alert to the user.
-      } // End delete-post error handling.
-    } // End deletePost function.
+    async function deletePost(postId) {
+      try {
+        const response = await fetch(`/posts/${postId}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (response.ok) {
+          getPosts();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting post');
+      }
+    }
+
     // Logout by redirecting to the logout endpoint
-    function logout() { // Redirect to the logout route to end the session.
-      window.location.href = '/logout'; // Navigate to the logout endpoint.
-    } // End logout function.
-  </script> // End inline JavaScript.
-</body> <!-- End page content container. -->
-</html> <!-- End of HTML document. -->
+    function logout() {
+      window.location.href = '/logout';
+    }
+  </script>
+</body>
+</html>
