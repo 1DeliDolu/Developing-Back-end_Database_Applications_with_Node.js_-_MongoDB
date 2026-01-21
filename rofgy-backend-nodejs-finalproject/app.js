@@ -31,7 +31,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: SECRET_KEY, resave: false, saveUninitialized: true, cookie: { secure: false } }));
 
 
-// Insert your authenticateJWT Function code here.
+function authenticateJWT(req, res, next) {
+  // Get token from session
+  const token = req.session.token;
+
+  // If no token, return 401 Unauthorized
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    // Attach user data to request
+    req.user = decoded;
+
+    // Continue to the next middleware
+    next();
+  } catch (error) {
+    // If invalid token, return 401
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+}
 
 // Insert your requireAuth Function code here.
 
