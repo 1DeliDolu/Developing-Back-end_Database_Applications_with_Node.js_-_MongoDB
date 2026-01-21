@@ -1,1 +1,106 @@
 // Insert your index.html code here.
+<!DOCTYPE html> <!-- Document type declaration for HTML5. -->
+<html lang="en"> <!-- Root element with English language. -->
+<head> <!-- Document metadata container. -->
+  <meta charset="UTF-8"> <!-- Use UTF-8 character encoding. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive viewport settings. -->
+  <title>Social Media Dashboard App</title> <!-- Page title shown in the browser tab. -->
+  <style> /* Start inline CSS styling. */
+    body { /* Base page layout styles. */
+      font-family: 'Roboto', sans-serif; /* Set default font family. */
+      background-color: #f5f5f5; /* Set light gray page background. */
+      text-align: center; /* Center-align text by default. */
+      margin: 0; /* Remove default margin. */
+      padding: 0; /* Remove default padding. */
+      box-sizing: border-box; /* Use border-box sizing for layout. */
+    } /* End body styles. */
+    header { /* Header area styles. */
+      background-color: #0077cc; /* Set header background color. */
+      color: #fff; /* Set header text color to white. */
+      padding: 20px; /* Add spacing inside header. */
+      text-align: right; /* Align header content to the right. */
+    } /* End header styles. */
+    h1 { /* Title styles. */
+      color: #333; /* Use dark gray text color. */
+      font-size: 2.5em; /* Increase title size. */
+      margin-bottom: 20px; /* Add spacing below the title. */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Add subtle text shadow. */
+    } /* End h1 styles. */
+    p { /* Paragraph styles. */
+      color: #555; /* Use medium gray text color. */
+      font-size: 1.2em; /* Increase paragraph font size. */
+    } /* End paragraph styles. */
+    .app-names { /* Container for app name badges. */
+      display: flex; /* Use flex layout for the badges. */
+      justify-content: center; /* Center items horizontally. */
+      margin-top: 30px; /* Add spacing above badges. */
+    } /* End .app-names styles. */
+    .app-names div { /* Individual badge styles. */
+      padding: 10px 20px; /* Add padding inside each badge. */
+      margin: 0 10px; /* Add horizontal spacing between badges. */
+      background-color: #0099ff; /* Set badge background color. */
+      color: #fff; /* Set badge text color to white. */
+      border-radius: 5px; /* Round the badge corners. */
+      font-weight: bold; /* Make badge text bold. */
+      text-transform: uppercase; /* Display badge text in uppercase. */
+    } /* End .app-names div styles. */
+    .button-link { /* Shared button styles. */
+      margin-top: 30px; /* Add spacing above buttons. */
+      padding: 15px 30px; /* Add padding inside buttons. */
+      font-size: 1.2em; /* Increase button text size. */
+      border: 2px solid #0099ff; /* Add blue border. */
+      border-radius: 8px; /* Round the button corners. */
+      background-color: #fff; /* Set button background to white. */
+      color: #0099ff; /* Set button text color to blue. */
+      cursor: pointer; /* Show pointer cursor on hover. */
+      text-decoration: none; /* Remove underline from links styled as buttons. */
+      display: inline-block; /* Allow padding and sizing for inline elements. */
+    } /* End .button-link styles. */
+  </style> <!-- End inline CSS styling. -->
+</head> <!-- End document metadata container. -->
+<body> <!-- Page content container. -->
+  <header> <!-- Header section with auth actions. -->
+    <button id="registerBtn" class="button-link" style="display:none" onclick="window.location.href='/register'">Register</button> <!-- Register button hidden until needed. -->
+    <button id="loginBtn" class="button-link" style="display:none" onclick="window.location.href='/login'">Login</button> <!-- Login button hidden until needed. -->
+    <button id="logoutBtn" class="button-link" style="display:none" onclick="logout()">Logout</button> <!-- Logout button hidden until needed. -->
+  </header> <!-- End header section. -->
+  <h1>Welcome to the Social Media Dashboard App!</h1> <!-- Main welcome heading. -->
+  <p id="welcomeMessage">Explore and manage your social media accounts in one place.</p> <!-- Introductory message text. -->
+  <div class="app-names"> <!-- Container for social app names. -->
+    <div>FaceSnap</div> <!-- Badge for FaceSnap. -->
+    <div>InstaBook</div> <!-- Badge for InstaBook. -->
+    <div>TweetChat</div> <!-- Badge for TweetChat. -->
+  </div> <!-- End app names container. -->
+  <button id="createPostBtn" class="button-link" style="display:none" onclick="redirectToPostCreation()">Create Post</button> <!-- Create Post button hidden until authenticated. -->
+  <script> // Start inline JavaScript.
+    function getUsernameFromURL() { // Read the username from the query string.
+      return new URLSearchParams(window.location.search).get('username'); // Extract the username param.
+    } // End getUsernameFromURL helper.
+    function handleAuthentication() { // Toggle UI based on authentication state.
+      const username = getUsernameFromURL(); // Read username from the URL.
+      const registerBtn = document.getElementById('registerBtn'); // Get the register button.
+      const loginBtn = document.getElementById('loginBtn'); // Get the login button.
+      const logoutBtn = document.getElementById('logoutBtn'); // Get the logout button.
+      const createPostBtn = document.getElementById('createPostBtn'); // Get the create post button.
+      if (username) { // Check if a username is present.
+        registerBtn.style.display = loginBtn.style.display = 'none'; // Hide register/login when authenticated.
+        logoutBtn.style.display = createPostBtn.style.display = 'inline-block'; // Show logout/create post when authenticated.
+        welcomeMessage.innerText = `Welcome, ${username}!`; // Personalize the welcome message.
+      } else { // Handle unauthenticated users.
+        registerBtn.style.display = loginBtn.style.display = 'inline-block'; // Show register/login when not authenticated.
+        logoutBtn.style.display = createPostBtn.style.display = 'none'; // Hide logout/create post when not authenticated.
+      } // End auth state check.
+    } // End handleAuthentication helper.
+    function logout() { // Trigger logout by navigating to the logout route.
+      window.location.href = '/logout'; // Redirect to the logout endpoint.
+    } // End logout helper.
+    function redirectToPostCreation() { // Navigate to the post creation page.
+      window.location.href = '/post'; // Redirect to the post creation route.
+    } // End redirectToPostCreation helper.
+    window.onload = function () { // Run when the page has finished loading.
+      getUsernameFromURL(); // Read username from URL (unused return for side effects consistency).
+      handleAuthentication(); // Update UI based on auth state.
+    }; // End onload handler.
+  </script> // End inline JavaScript.
+</body> <!-- End page content container. -->
+</html> <!-- End of HTML document. -->
